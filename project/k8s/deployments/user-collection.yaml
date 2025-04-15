@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-collection
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-collection
+  template:
+    metadata:
+      labels:
+        app: user-collection
+    spec:
+      containers:
+        - name: user-collection
+          image: ictarchproject
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /collection
+              port: 3000
+          readinessProbe:
+            httpGet:
+              path: /collection
+              port: 3000
