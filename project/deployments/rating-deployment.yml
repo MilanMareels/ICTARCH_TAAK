@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rating-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rating
+  template:
+    metadata:
+      labels:
+        app: rating
+    spec:
+      containers:
+        - name: rating
+          image: rating-service:local
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rating-service
+spec:
+  selector:
+    app: rating
+  ports:
+    - port: 80
+      targetPort: 3001 # port van npm start 3000 index.js
+      nodePort: 30082 # port to use in browser
+  type: NodePort
