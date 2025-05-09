@@ -1,25 +1,25 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const app = express();
+require("dotenv").config();
 
+const app = express();
 app.use(express.json());
-const SECRET = "mysecret";
+const port = 4000;
+
+const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
+
+const dummyUser = { id: 1, username: "admin" };
 
 app.post("/login", (req, res) => {
-  const token = jwt.sign({ user: "demo" }, SECRET, { expiresIn: "1h" });
-  res.json({ token });
-});
-
-app.get("/verify", (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  try {
-    jwt.verify(token, SECRET);
-    res.sendStatus(200);
-  } catch {
-    res.sendStatus(401);
+  const { username } = req.body;
+  if (username === dummyUser.username) {
+    const token = jwt.sign({ id: dummyUser.id, username }, JWT_SECRET, { expiresIn: "1h" });
+    res.json({ token });
+  } else {
+    res.status(401).json({ error: "Invalid credentials" });
   }
 });
 
-app.get("/metrics", (req, res) => res.send("# HELP auth_metric 1\nauth_metric 1"));
-
-app.listen(3000, () => console.log("Auth-service listening on port 3000"));
+app.listen(port, () => {
+  console.log(`Auth Service running on port http://localhost:${port}`);
+});

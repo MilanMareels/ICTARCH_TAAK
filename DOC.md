@@ -71,8 +71,6 @@ In dit document beschrijf ik:
 - Een **monolithische implementatie**, inclusief de gekozen architecturale stijl, de motivering voor deze keuze en een mapping van de logische componenten op de fysieke structuur.
 - Een **microservicesarchitectuur**, met een overzicht van de opdeling in services, bijhorende ADR's, voor- en nadelen, en een Kubernetes-proof-of-concept dat de werking van de losse componenten illustreert.
 
-Hier is een overzichtelijke uitwerking van de gevraagde onderdelen rond **monolithische stijlkeuze** en **microservices voor- en nadelen**, specifiek afgestemd op jullie game-meta-winkelproject.
-
 ---
 
 ## Monolithische Architecturale Stijl:
