@@ -7,6 +7,8 @@ const port = 3003;
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
+app.use(express.json());
+
 // Middleware om JWT-token te controleren
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -44,6 +46,27 @@ app.get("/notifications", authenticateToken, (req, res) => {
     username,
     notifications: userNotifications,
   });
+});
+
+app.post("/notifications", authenticateToken, (req, res) => {
+  const username = req.user?.username;
+  const { message } = req.body;
+
+  if (!message) {
+    return res.status(400).json({ error: "Missing message" });
+  }
+
+  if (!notifications[username]) {
+    notifications[username] = [];
+  }
+
+  const newNotification = {
+    id: notifications[username].length + 1,
+    message,
+  };
+
+  notifications[username].push(newNotification);
+  res.status(201).json(newNotification);
 });
 
 app.listen(port, () => {
