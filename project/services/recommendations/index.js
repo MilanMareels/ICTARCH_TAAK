@@ -7,7 +7,8 @@ const port = 3002;
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
-// Middleware to verify JWT token
+app.use(express.json());
+
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -25,7 +26,6 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// Recommendations per user
 const userRecommendations = {
   milan: [
     {
@@ -55,13 +55,27 @@ const userRecommendations = {
 
 app.get("/recommendations", authenticateToken, (req, res) => {
   const username = req.user?.username || "default";
-
-  const recommendations = userRecommendations[username] || `No recommendations found for ${username}`;
-
+  const recommendations = userRecommendations[username] || [];
   res.json({
     username,
     recommendedGames: recommendations,
   });
+});
+
+app.post("/recommendations", authenticateToken, (req, res) => {
+  const username = req.user?.username || "default";
+  const { id, title, reason } = req.body;
+
+  if (!id || !title || !reason) {
+    return res.status(400).json({ error: "Missing id, title or reason" });
+  }
+
+  if (!userRecommendations[username]) {
+    userRecommendations[username] = [];
+  }
+
+  userRecommendations[username].push({ id, title, reason });
+  res.status(201).json({ message: "Recommendation added", data: userRecommendations[username] });
 });
 
 app.listen(port, () => {
