@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: curator-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: curator
+  template:
+    metadata:
+      labels:
+        app: curator
+    spec:
+      containers:
+        - name: curator
+          image: curator-service:local
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: curator-service
+spec:
+  selector:
+    app: curator
+  ports:
+    - port: 80
+      targetPort: 3007 # port van npm start 3005 index.js
+      nodePort: 30088 # port to use in browser
+  type: NodePort

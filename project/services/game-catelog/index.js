@@ -7,7 +7,8 @@ const port = 3000;
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
-// Middleware om token te controleren
+app.use(express.json());
+
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -25,37 +26,50 @@ function authenticateToken(req, res, next) {
   });
 }
 
+const games = [
+  {
+    id: 1,
+    title: "The Legend of Zelda: Breath of the Wild",
+    genre: "Adventure",
+    platform: "Nintendo Switch",
+    releaseYear: 2017,
+  },
+  {
+    id: 2,
+    title: "God of War Ragnarök",
+    genre: "Action",
+    platform: "PlayStation 5",
+    releaseYear: 2022,
+  },
+  {
+    id: 3,
+    title: "Halo Infinite",
+    genre: "Shooter",
+    platform: "Xbox Series X",
+    releaseYear: 2021,
+  },
+  {
+    id: 4,
+    title: "Elden Ring",
+    genre: "RPG",
+    platform: "PC",
+    releaseYear: 2022,
+  },
+];
+
 app.get("/game-catalog", authenticateToken, (req, res) => {
-  res.json([
-    {
-      id: 1,
-      title: "The Legend of Zelda: Breath of the Wild",
-      genre: "Adventure",
-      platform: "Nintendo Switch",
-      releaseYear: 2017,
-    },
-    {
-      id: 2,
-      title: "God of War Ragnarök",
-      genre: "Action",
-      platform: "PlayStation 5",
-      releaseYear: 2022,
-    },
-    {
-      id: 3,
-      title: "Halo Infinite",
-      genre: "Shooter",
-      platform: "Xbox Series X",
-      releaseYear: 2021,
-    },
-    {
-      id: 4,
-      title: "Elden Ring",
-      genre: "RPG",
-      platform: "PC",
-      releaseYear: 2022,
-    },
-  ]);
+  res.json(games);
+});
+
+app.post("/game-catalog", authenticateToken, (req, res) => {
+  const game = req.body;
+  if (!game.title || !game.genre || !game.platform || !game.releaseYear) {
+    return res.status(400).json({ error: "Missing game properties" });
+  }
+
+  game.id = games.length + 1;
+  games.push(game);
+  res.status(201).json(game);
 });
 
 app.listen(port, () => {
